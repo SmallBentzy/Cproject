@@ -1,23 +1,11 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
 #include <math.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "main.h"
-
-#define KNRM  "\x1B[0m"
-
-
-int readData(FILE*, Node**);
-void print(Node* head);
-void delete_data_linked_list(Node* head);
-int insert_data(Course_data data, Node** head);
-Node* create_node();
-void addNode(Node* newNode, Node** head);
-Node* findByID(int ID, Node* head);
-Course_data reset_course_data();
-void error_exit(char*, Node*);
+#include "Select.h"
+#include "MargeSortList.h"
+//#define KNRM  "\x1B[0m"
 
 
 int main() {
@@ -31,53 +19,208 @@ int main() {
     }
     valid_flag = readData(file, &listHead);
         //error_exit("error at read file", listHead);
-    print(listHead);
+    print(listHead, reset_course_data(), UnFilter, equal);
     if(!valid_flag)
         printf("There was a mismatch or failure to receive the data. \n"\
             "If you make an update, the input file will be replaced with the recorded data only.\n");
+    listen(&listHead);
     fclose(file);
     delete_data_linked_list(listHead);
 
 }
+
+void listen(Node** listHead) {
+    char line[MAX_ROW],*pcommand;
+   char start_flag = 1;
+
+   while(start_flag) {
+       prompet(line);
+       int len = strlen(line);
+       if (line[len - 1] == '\n')
+           line[len - 1] = '\0';
+       if (strlen(line) == 0)
+           continue;
+       pcommand = strtok(line, " ");
+       //strcpy(command, strtok(line, " "));
+       if (!pcommand)
+           continue;
+       
+       if (strcmp(pcommand, "quit")==0) {
+           start_flag = 0;
+           continue;
+       }
+       if (len == MAX_ROW-1) {
+           printf("You enterd to long command. please enter a valid command, acording to rools\n");
+           while (getchar()!='\n');
+           continue;
+       }
+       if (strcmp(pcommand, "set")==0) {
+           do_set(listHead, line);
+           MergeSort(listHead);
+           continue;
+       }
+       if (strcmp(pcommand, "print") == 0) {
+           print(*listHead, reset_course_data(), UnFilter, equal);
+           continue;
+       }
+       if (strcicmp(pcommand, "select") == 0) {
+           do_select(listHead, line);
+           continue;
+       }
+       printf("Invalid command!\n");                            //if it no mach any command.
+   }
+}
+
+void do_set(Node** listHead, char* line) {
+    char *took;
+    Course_data data = reset_course_data();
+    Courses course;
+    Node* studentNode;
+    took=strtok(NULL, "=");
+    if (!took || strcmp(took + space_counter(took), "first name")) {
+        printf("invalid command!\n");
+        return;
+    }
+    took = strtok(NULL, "=,");
+    if (!took || !validatename(took))
+        return;
+    strcpy(data.firstN ,took);
+
+    took = strtok(NULL, ",=");
+    if ( !took || strcmp(took+ space_counter(took), "second name")) {
+        printf("invalid command!\n");
+        return;
+    }
+
+    took = strtok(NULL, ",=");
+    if (!took || !validatename(took))
+        return ;
+    strcpy(data.lastN, took);
+
+    took = strtok(NULL, ", =");
+    if (!took || strcmp(took+ space_counter(took), "ID")) {
+        printf("invalid command!\n");
+        return;
+    }
+
+    took = strtok(NULL, ", =");
+    if (!took || !valisateID(took))
+        return 0;
+    data.ID = atoi(took);
+
+    for (Courses c = 0; c < NUM_OF_CPURSES; c++) {
+
+        took = strtok(NULL, ",=\n");
+        if (!took) {
+            //printf("invalid command! \n");
+            //return;
+            break;
+        }
+        course = validCourse(took + space_counter(took));
+        if (course == no_valid) {
+            printf("invalid command! course '%s' not exist\n", took);
+            return;
+        }
+
+
+        took = strtok(NULL, " ,");
+        if (!took)
+            printf("invalid command! course missing course grade\n");
+        if (!validateScore(took))
+            return 0;
+        insert_degree(course, atof(took), &data);
+
+    }
+
+
+//insert: 
+    studentNode = findByID(data.ID, *listHead);
+    if (studentNode)
+        copyStudentData(studentNode, data);
+    else
+        insert_data(data, listHead);
+
+}
+
+void copyStudentData(Node* studentNode, Course_data data) {
+    strcpy(studentNode->course_data->firstN, data.firstN);
+    strcpy(studentNode->course_data->lastN, data.lastN);
+    for (Courses c = 0; c < NUM_OF_CPURSES; c++)
+        if (data.scores[c] != -1)
+            studentNode->course_data->scores[c] = data.scores[c];
+}
+
+
+void prompet(char* line) {
+    printf("->");
+    fgets(line, MAX_ROW, stdin);
+}
+
 
 int readData(FILE* file, Node** head) {
     char line[MAX_ROW+1];
     char valid_flag = 1;
     int index = 0;
     Course_data data;
-    fgets(line, MAX_ROW + 1, file);
-    while (strlen(line) > 30) {
+
+   //fgets(line, MAX_ROW + 1, file);
+    while (fgets(line, MAX_ROW + 1, file) ) {
         index++;
+        //if(line[strlen(line)-1]=='\0')
         data = reset_course_data();
         if (!getData(line, &data)) {
-            printf("line %d is no valid\n", index);
+            printf("line %d no entered\n", index);
             valid_flag = 0;
-            goto next;
+           // goto next;
         }
         else
             if (!insert_data(data, head)) {
                 valid_flag = 0;
                 printf("line %d is no valid\n", index);
             }
- next:   fgets(line, MAX_ROW + 1, file);
+ //next:   //fgets(line, MAX_ROW + 1, file);
         //printf("\n%s\n", line);
     }
+    MergeSort(head);
     return valid_flag;
 }
 
-void print(Node* head) {
+void print(Node* head, Course_data model, filter fil, operator op) {
     COURSES_ARRAY
-    while (head) {
-        printf(" %-25s %-25s ",head->course_data->firstN, head->course_data->lastN);
-        for (Courses c = 0; c < NUM_OF_CPURSES; c++)
-            if(head->course_data->scores[c]!= -1)
-                printf("%-3d     ", head->course_data->scores[c]);
-            else
-                printf("---     ");
+        if (head) {
+            for (Courses c = 0; c < NUM_OF_CPURSES +2; c++)
+                printf("-------------------------");
+            printf("\n");
+            printf(" %-25s %-25s ", "first name", "last name");
+            for (Courses c = 0; c < NUM_OF_CPURSES; c++)
+                printf(" %-25s ", courses[c]);
 
-        printf("\n");
-        head = head->next;
-    }
+            printf("\n");
+            for (Courses c = 0; c < NUM_OF_CPURSES + 2; c++)
+                printf("=========================");
+            printf("\n");
+            while (head) {
+                if (fil( model, *(head->course_data), op)==1) {
+                    printf(" %-25s %-25s ", head->course_data->firstN, head->course_data->lastN);
+                    for (Courses c = 0; c < NUM_OF_CPURSES; c++)
+                        if (head->course_data->scores[c] != -1)
+                            printf(" %-25.0f ", head->course_data->scores[c]);
+                        else
+                            printf(" %-25s ", "---");
+
+                    printf("\n");
+                }
+                head = head->next;
+            }
+            for (Courses c = 0; c < NUM_OF_CPURSES + 2; c++)
+                printf("=========================");
+            printf("\n");
+        }
+}
+
+
+int UnFilter(Course_data model, Course_data data, operator op) {
+    return(1);
 }
 
 void delete_data_linked_list(Node* head) {
@@ -115,7 +258,7 @@ int insert_data(Course_data data, Node** head) {
 #endif // DEBUG
 
         if (strcmp(node->course_data->firstN, data.firstN) || strcmp(node->course_data->lastN, data.lastN)) {
-            printf("Two names, with the same ID number, '%d' \n", data.ID);
+            printf("Two names, with the same ID number, '%d' ", data.ID);
             return 0;
         }
         
@@ -135,6 +278,16 @@ int insert_data(Course_data data, Node** head) {
     printf("\n");
 #endif // DEBUG
     return 1;
+}
+/*counts and returns the apaces begin the given str
+*/
+int space_counter(char* str) {
+    int counter = 0;
+    while ( str && *str == ' ') {
+        counter++;
+        str++;
+    }
+    return counter;
 }
 
 Node* create_node() {
@@ -203,36 +356,18 @@ int getData(char* one, Course_data* data) {
 #endif // DEBUG
     char temp[MAX_ROW+1];
     strcpy(temp, strtok(one, ","));
-    if (strlen(temp) > MAX_NAME) {
-        printf("the name '%s' is to long. Name should be shorter than %d\n", temp, MAX_NAME);
+    if (!validatename(temp))
         return 0;
-    }
-    if (!(isAlphaOnlyString(temp))) {
-        printf("the name '%s' is non-standard. Name have contain letters only %d\n", temp, MAX_NAME);
-        return 0;
-    }
     strcpy(data->firstN, temp);
 
     strcpy(temp, strtok(NULL, ","));
-    if (strlen(temp) > MAX_NAME) {
-        printf("the name '%s' is to long. Name should be shorter than %d\n.", temp, MAX_NAME);
+    if (!validatename(temp))
         return 0;
-    }
-    if (!isAlphaOnlyString(temp)) {
-        printf("the name '%s' is non-standard. Name have contain letters only\n.", temp);
-        return 0;
-    }
     strcpy(data->lastN, temp);
 
-    strcpy(temp, strtok(NULL, ","));
-    if (!isNumericOnlyString(temp)) {
-        printf("the ID '%s' is no valid. it have contain digits only.\n", temp);
+    strcpy(temp, strtok(NULL, ","));   
+    if (!valisateID(temp))
         return 0;
-    }
-    if (strlen(temp)!=9) {
-        printf("the ID '%s' is no valid. it have be 9 digits.\n", temp);
-        return 0;
-    }
     data->ID = atoi(temp);
 
     strcpy(temp, strtok(NULL, ","));
@@ -249,17 +384,48 @@ int getData(char* one, Course_data* data) {
     strcpy(temp, strtok(NULL, ","));
     if (temp[strlen(temp) - 1 == '\n'])
         temp[strlen(temp)- 1] = '\0';
-    if (!isNumericOnlyString(temp)) {
-        printf("the degree '%s' is no valid. it have contain digits only.\n", temp);
+    if (!validateScore(temp))
         return 0;
-    }
     float degree = atof(temp);
-    if (degree< MIN_SCORE || degree >MAX_SCORE) {
-        printf("the ID '%s' is no valid. it have be between %d to %d.\n", temp, MAX_SCORE, MIN_SCORE);
-        return 0;
-    }
     insert_degree(course, degree, data);
 
+    return 1;
+}
+
+int validatename(char* str) {
+    if (strlen(str) > MAX_NAME) {
+        printf("the name '%s' is to long. Name should be shorter than %d\n.", str, MAX_NAME);
+        return 0;
+    }
+    if (!isAlphaOnlyString(str)) {
+        printf("the name '%s' is non-standard. Name have contain letters only\n.", str);
+        return 0;
+    }
+    return 1;
+}
+
+int validateScore(char* str) {
+    if (!isNumericOnlyString(str)) {
+        printf("the degree '%s' is no valid. it have contain digits only.\n", str);
+        return 0;
+    }
+    float degree = atof(str);
+    if (degree< MIN_SCORE || degree >MAX_SCORE) {
+        printf("the ID '%s' is no valid. it have be between %d to %d.\n", str, MAX_SCORE, MIN_SCORE);
+        return 0;
+    }
+    return 1;
+}
+
+int valisateID(char* str) {
+    if (!isNumericOnlyString(str)) {
+        printf("the ID '%s' is no valid. it have contain digits only.\n", str);
+        return 0;
+    }
+    if (strlen(str) != 9) {
+        printf("the ID '%s' is no valid. it have be 9 digits.\n", str);
+        return 0;
+    }
     return 1;
 }
 
@@ -293,17 +459,3 @@ Courses validCourse(char* str) {
 void insert_degree(Courses course, float degree, Course_data *data) {
     data->scores[course] = degree;
 }
-
-
-//void print_ledger_To_File(struct Ledger* ledger, FILE* ofp) {
-//    fprintf(ofp, "\n==================================================\n");
-//    fprintf(ofp, "%s report - %s\n", ledger->quarter, ledger->business);
-//    fprintf(ofp, "==================================================\n");
-//    fprintf(ofp, "Income:    $ %4.2lf\tAssets:      $ %4.2lf\n", ledger->income, ledger->assets);
-//    fprintf(ofp, "Expenses:  $ %4.2f\tLiabilities: $ %4.2f\n", ledger->expenses, ledger->liabilities);
-//    fprintf(ofp, "--------------------------------------------------\n");
-//    fprintf(ofp, "profits:   $ %4.2lf\tNet Worth:   $ %4.2lf \n", ledger->income - ledger->expenses, ledger->assets - ledger->liabilities);
-//    fprintf(ofp, "--------------------------------------------------\n");
-//
-//
-//}
