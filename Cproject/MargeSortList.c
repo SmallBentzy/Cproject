@@ -1,7 +1,6 @@
 
 #include <stdlib.h>
 #include "main.h"
-//#include <string.h>
 #include "MargeSortList.h"
 #include"Utililities.h"
 //#define DEBUG 0
@@ -36,7 +35,7 @@ void MergeSort( Node** headRef)
  Node* SortedMerge( Node* a,  Node* b)
 {
      Node* result = NULL;
-     char aName[MAX_NAME], bName[MAX_NAME];
+     //char aName[MAX_NAME], bName[MAX_NAME];
     // Base cases
     if (a == NULL)
         return (b);

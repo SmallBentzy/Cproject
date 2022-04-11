@@ -43,3 +43,93 @@ void eraseSpace(char* str) {
 	if (index != -1)
 		str[index] = '\0';
 }
+
+Course_data reset_course_data() {
+#ifdef DEBUG
+	printf(KNRM " line %d in func  %s file %s\n", __LINE__, __func__, __FILE__);
+#endif // DEBUG
+
+	Course_data new;
+	for (int i = 0; i < NUM_OF_COURSES; i++)
+		new.scores[i] = -1;
+	return new;
+}
+
+int validatename(char* str) {
+    if (strlen(str) > MAX_NAME) {
+        printf("the name '%s' is to long. Name should be shorter than %d\n.", str, MAX_NAME);
+        return 0;
+    }
+    if (!isAlphaOnlyString(str)) {
+        printf("the name '%s' is non-standard. Name have contain letters only\n.", str);
+        return 0;
+    }
+    return 1;
+}
+
+int validateScore(char* str) {
+    if (!isNumericOnlyString(str)) {
+        printf("the degree '%s' is no valid. it have contain digits only.\n", str);
+        return 0;
+    }
+    float degree = atof(str);
+    if (degree< MIN_SCORE || degree >MAX_SCORE) {
+        printf("the score '%s' is no valid. it have be between %d to %d.\n", str, MAX_SCORE, MIN_SCORE);
+        return 0;
+    }
+    return 1;
+}
+
+int validateID(char* str) {
+    if (!isNumericOnlyString(str)) {
+        printf("the ID '%s' is no valid. it have contain digits only.\n", str);
+        return 0;
+    }
+    if (strlen(str) != 9) {
+        printf("the ID '%s' is no valid. it have be 9 digits.\n", str);
+        return 0;
+    }
+    return 1;
+}
+
+int isAlphaOnlyString(char* str) {
+    while (*str != 0) {
+        if (!isalpha(*str++))
+            return 0;
+    }
+    return 1;
+}
+
+int isNumericOnlyString(char* str) {
+    while (*str != 0) {
+        if (!isdigit(*str++))
+            return 0;
+    }
+    return 1;
+}
+
+Courses validCourse(char* str) {
+    COURSES_ARRAY
+#ifdef DEBUG
+        printf("%s\n ", str);
+#endif // DEBUG
+    for (Courses i = 0; i < NUM_OF_COURSES; i++)
+        if (!strcmp(courses[i], str))
+            return i;
+    return no_valid;
+}
+
+/*counts and returns the apaces begin the given str
+*/
+int space_counter(char* str) {
+    int counter = 0;
+    while (str && *str == ' ') {
+        counter++;
+        str++;
+    }
+    return counter;
+}
+
+void insert_degree(Courses course, float degree, Course_data* data) {
+    data->scores[course] = degree;
+}

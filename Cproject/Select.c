@@ -1,7 +1,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "Select.h"
-#include "main.h"
+#include "HandleDataList.h"
 #include <string.h>
+#include <stdio.h>
+#include "Print.h"
+
+
 #include"Utililities.h"
 
 //#include<string.h> 
@@ -9,22 +13,23 @@
 
 void do_select(Node** listHead, char* line) {
     char* took;
-    char copy[MAX_ROW];
+    char* ch=NULL;
+    char* copy = line + 7;//                                    the offset of 'select'
     Course_data data = reset_course_data();
-    operator op;
-    //Courses course;
-    //Node* studentNode;
-    // 
-    //char* dup = _strdup(line);
-    //printf("%s\n", dup);
-    strcpy(copy, line);
+    operato op;
+    Courses course =no_valid;
+    
+    if ((ch = strchr(copy, '<')) || (ch = strchr(copy, '>')) || (ch = strchr(copy, '='))) {
+        //ch -= strlen(line);
+        op = swichoperato(*ch);
+    }
     took = strtok(NULL, "=<>");
     if (!took) {
         printf("invalid command! parmetrer missing\n");
         return;
     }
-    eraseSpace(took);
-    took += space_counter(took);
+    eraseSpace(took);                                                                 //erase begining apace
+    took += space_counter(took);                                                      //erase ending space
     if ( !strcicmp(took, "first name")) {
         took = strtok(NULL, "");
         if (!took) {
@@ -56,37 +61,39 @@ void do_select(Node** listHead, char* line) {
         strcpy(data.lastN, took);
         print(*listHead, data, LastNameFilter, equal);
         return;
-    }
-    if(!strcicmp(took, "Average")) {
-
-       printf("%c  %s %ld\n", copy[took - line + strlen(took)], copy, took - line + strlen(took));
-        op = swichOperator(copy[took - line + strlen(took)+1]);
-        //op = swichOperator(*(took+strlen(took)+2));
-        if (!op ) {
-            printf("invalid operand '%c'\n", copy[took - line + strlen(took)+1]);
-            return;
-        }
-        took = strtok(NULL, " ");
+    }                                                                       //calc select by course score or average
+    if(!strcicmp(took, "Average") || (course = validCourse(took))!= no_valid) {
+        took = strtok(NULL, " \n");
         if (!took) {
             printf("invalid command! parameter mising\n");
             return;
         }
-        //took += space_counter(took);
-        //eraseSpace(took);
+        took += space_counter(took);
+        eraseSpace(took);
         if (!validateScore(took)) {
             return;
         }
-        data.scores[0]= atof(took);
-        print(*listHead, data, averageFilter, op);
+        if(course ==no_valid)
+            data.average = (float)atof(took);
+        else
+            data.scores[course] = atoi(took);
+        if(took = strtok(NULL, " "))
+            printf("Unnecessary arguments in command line %s\n", took);
+        if(course==no_valid)
+            print(*listHead, data, averageFilter, op);
+        else
+            print(*listHead, data, gradeFilter, op);
+
         return;
     }
+    //else
+    printf("'%s' is not a parameter.\n", took);
 
-    //free(dup);
 }
 
 
 
-operator swichOperator(char c) {
+operato swichoperato(char c) {
     switch (c)
     {
     case'<':
@@ -100,32 +107,40 @@ operator swichOperator(char c) {
     }
 }
 
-int FirstNameFilter(Course_data model, Course_data data, operator op) {
+int FirstNameFilter(Course_data model, Course_data data, operato op) {
     return( !strcicmp(model.firstN, data.firstN ) );
 }
 
-int LastNameFilter(Course_data model, Course_data data, operator op) {
+int LastNameFilter(Course_data model, Course_data data, operato op) {
     return(!strcicmp(model.lastN, data.lastN));
 }
 
-int averageFilter(Course_data model, Course_data data, operator op) {
+int gradeFilter(Course_data model, Course_data data, operato op) {
+    Courses i = 0;
+    for (; i < NUM_OF_COURSES; i++)
+        if (model.scores[i] != -1)
+            break;
+    return calc(data.scores[i], op, model.scores[i]);
+}
+
+int averageFilter(Course_data model, Course_data data, operato op) {
     float ave = calAverage(data.scores);
-    return calc(ave, op, model.scores[0]);
+    return calc(ave, op, model.average);
 }
 
 //call avaerage of degree aray. only valid listings consired.
 float calAverage(char* arr) {
     int i, counter =0;
     float sum = 0;   
-    for(i=0; i<NUM_OF_CPURSES; i++)
+    for(i=0; i<NUM_OF_COURSES; i++)
         if (arr[i] != -1) {
             sum += arr[i];
             counter++;
        }
-    return sum / counter;
+    return (float)sum /counter;
 }
 
-int calc(float ave, operator op, float model) {
+int calc(float ave, operato op, float model) {
     switch (op)
     {
     case less:
