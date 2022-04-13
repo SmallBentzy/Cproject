@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "ReadFile.h"
 #include "HandleDataList.h"
+#include "MargeSortList.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,27 +10,22 @@
 
 //data in string format is to be supplied to Cource data and it will store that in structure, after string parsing, strtok will tokenize string from each “,”
 int getData(char* one, Course_data* data) {
-    //char temp[MAX_ROW + 1];
     char* ptook = NULL;
-    //strcpy(temp, strtok(one, ","));
     ptook = strtok(one, ",");
     if (!validatename(ptook))
         return 0;
     strcpy(data->firstN, ptook);
 
-    //strcpy(temp, strtok(NULL, ","));
     ptook = strtok(NULL, ",");
     if (!validatename(ptook))
         return 0;
     strcpy(data->lastN, ptook);
 
-    //strcpy(temp, strtok(NULL, ","));
     ptook = strtok(NULL, ",");
     if (!validateID(ptook))
         return 0;
     data->ID = atoi(ptook);
 
-    //strcpy(temp, strtok(NULL, ","));
     ptook = strtok(NULL, ",");
     Courses course;
     if ((course = validCourse(ptook)) == NUM_OF_COURSES) {
@@ -37,29 +33,34 @@ int getData(char* one, Course_data* data) {
         return 0;
     }
 
-    //strcpy(temp, strtok(NULL, ", \n"));
     ptook = strtok(NULL, ", \n");
     if (!validateScore(ptook))
         return 0;
-    float degree = atof(ptook);
+    char degree = (char)atoi(ptook);
     insert_degree(course, degree, data);
 
     return 1;
 }
 
-int readData(FILE* file, Node** head) {
-    char line[MAX_ROW + 1];
-    char valid_flag = 1;
+int readData(/*FILE* file,*/ Node** head) {
+    char line[MAX_ROW + 2];
+    char valid_flag = 1, to_longFlag=0;
     int index = 0;
     Course_data data;
-
-    while (fgets(line, MAX_ROW + 1, file)) {
+    FILE* file = fopen(INPUT_FILE, "r");
+    if (!file) {
+        printf("error to open read file");
+        exit(1);
+    }
+    while (fgets(line, MAX_ROW + 2, file)) {
         index++;
-        int len = strlen(line);
+        int len = (int)strlen(line);
         if (line[len - 1] == '\n')
             line[len - 1] = '\0';
-        if (len == MAX_ROW - 1)
+        else {
             while (getchar() != '\n');
+            to_longFlag = 1;
+        }
 
         data = reset_course_data();
         if (!getData(line, &data)) {
@@ -72,15 +73,17 @@ int readData(FILE* file, Node** head) {
                 valid_flag = 0;
                 printf("line %d is no valid\n", index);
             }
-            else {
-                char trash = strtok(NULL, " ");
-                if (trash)
+            else {                                      
+                char* trash = strtok(NULL, " ");
+                if (trash || to_longFlag)
                     printf("Unnecessary arguments in line %d\n", index);
             }
         }
         //next:   //fgets(line, MAX_ROW + 1, file);
                //printf("\n%s\n", line);
+        
     }
+    fclose(file);
     MergeSort(head);
     return valid_flag;
 }

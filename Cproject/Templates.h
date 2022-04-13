@@ -1,6 +1,7 @@
 #pragma once
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <ctype.h>
+#include <stdio.h>
 
 
 #define INPUT_FILE "D:new 2.txt"

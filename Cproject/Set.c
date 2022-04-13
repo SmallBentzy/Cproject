@@ -4,11 +4,14 @@
 #include "UpdareFile.h"
 #include "HandleDataList.h"
 #include <ctype.h>
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
+
+//#include <stdlib.h>
 
 
-void do_set(Node** listHead, char* line) {
+
+void do_set(/*FILE** file,*/ Node** listHead, char* line) {
     char* took;
     Course_data data = reset_course_data();
     Courses course;
@@ -33,7 +36,7 @@ void do_set(Node** listHead, char* line) {
     eraseSpace(took);                                                                 //erase begining apace
     took += space_counter(took);
     if (!took || strcmp(took, "second name")) {
-        printf("invalid command!\n");
+        printf("invalid command! parameter '%s' not identified\n", took);
         return;
     }
 
@@ -79,7 +82,7 @@ void do_set(Node** listHead, char* line) {
         printf("invalid command! course missing course grade\n");
     if (!validateScore(took))
         return;
-    insert_degree(course, atof(took), &data);
+    insert_degree(course, atoi(took), &data);
 
 
     //insert: 
@@ -88,6 +91,7 @@ void do_set(Node** listHead, char* line) {
         copyStudentData(studentNode, data);
     else
         insert_data(data, listHead);
+    updateData(/*file,*/ *listHead);
 
 
 }

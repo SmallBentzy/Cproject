@@ -3,4 +3,4 @@
 
 int getData(char* one, Course_data* data);
 
-int readData(FILE* file, Node**);
+int readData(/*FILE* file,*/ Node**);

@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <stdlib.h>
 
 
 int insert_data(Course_data data, Node** head) {

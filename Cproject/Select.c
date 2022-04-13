@@ -4,72 +4,92 @@
 #include <string.h>
 #include <stdio.h>
 #include "Print.h"
-
-
+//#include<math.h>
 #include"Utililities.h"
-
-//#include<string.h> 
-
+#include <stdlib.h>
 
 void do_select(Node** listHead, char* line) {
     char* took;
     char* ch=NULL;
-    char* copy = line + 7;//                                    the offset of 'select'
+    char* copy = line + 7 + space_counter(line);//                                    the offset of 'select'
     Course_data data = reset_course_data();
-    operato op;
+    operato op =invalid;
     Courses course =no_valid;
     
-    if ((ch = strchr(copy, '<')) || (ch = strchr(copy, '>')) || (ch = strchr(copy, '='))) {
+    if ((ch = strchr(copy, '<')) || (ch = strchr(copy, '>')) || (ch = strstr(copy, "!=")) || (ch = strchr(copy, '=')) ) {
         //ch -= strlen(line);
-        op = swichoperato(*ch);
+        op = swichoperato(ch);
     }
-    took = strtok(NULL, "=<>");
+    else {
+        printf("invalid command! operator missing\n");
+        return;
+    }
+    took = strtok(NULL, "=<>!");
     if (!took) {
         printf("invalid command! parmetrer missing\n");
         return;
     }
     eraseSpace(took);                                                                 //erase begining apace
     took += space_counter(took);                                                      //erase ending space
+    
+    
     if ( !strcicmp(took, "first name")) {
-        took = strtok(NULL, "");
+        took = strtok(NULL, ",\n");
         if (!took) {
             printf("invalid command! name mising\n");
             return;
         }
-        took += space_counter(took);
+        if ((op == e_less || op == e_more || op == different))                  //need to jamp over the double operator
+            took++;
+        took += space_counter(took);     
         eraseSpace(took);
+
         if (!validatename(took)) {
-            printf("Invalid name '%s'\n", took);
+            //printf("Invalid name '%s'\n", took);
             return;
         }
         strcpy(data.firstN, took);
-        print(*listHead, data, FirstNameFilter, equal);
+        if (took = strtok(NULL, ""))
+            printf("Unnecessary arguments in command line. '%s'\n", took);
+        print(*listHead, data, FirstNameFilter, op);
+
         return;
     }
+
     if (!strcicmp(took , "second name")) {
-        took = strtok(NULL, "");
+        took = strtok(NULL, ", \n");
         if (!took) {
             printf("invalid command! name mising\n");
             return;
         }
+        if ((op == e_less || op == e_more || op == different))                  //need to jamp over the double operator
+            took++;
         took += space_counter(took);
         eraseSpace(took);
+        
         if (!validatename(took)) {
             printf("Invalid name '%s'\n", took);
             return;
         }
         strcpy(data.lastN, took);
-        print(*listHead, data, LastNameFilter, equal);
+        if (took = strtok(NULL, ""))
+            printf("Unnecessary arguments in command line. '%s'\n", took);
+        print(*listHead, data, LastNameFilter, op);
         return;
     }                                                                       //calc select by course score or average
+   
+    
     if(!strcicmp(took, "Average") || (course = validCourse(took))!= no_valid) {
-        took = strtok(NULL, " \n");
+        took = strtok(NULL, " ,\n");
         if (!took) {
             printf("invalid command! parameter mising\n");
             return;
         }
+        if ((op == e_less || op == e_more || op == different))                  //need to jamp over the double operator
+            took++;
         took += space_counter(took);
         eraseSpace(took);
+
         if (!validateScore(took)) {
             return;
         }
@@ -78,7 +98,7 @@ void do_select(Node** listHead, char* line) {
         else
             data.scores[course] = atoi(took);
         if(took = strtok(NULL, " "))
-            printf("Unnecessary arguments in command line %s\n", took);
+            printf("Unnecessary arguments in command line. '%s'\n", took);
         if(course==no_valid)
             print(*listHead, data, averageFilter, op);
         else
@@ -93,26 +113,49 @@ void do_select(Node** listHead, char* line) {
 
 
 
-operato swichoperato(char c) {
-    switch (c)
+operato swichoperato(char *c) {
+    operato op;
+    switch (*c)
     {
     case'<':
-        return less;
+        if (*(c + 1) == '=')
+            op = e_less;
+        else
+            op = less;
+        break;
+
     case'>':
-        return more;
+        if (*(c + 1) == '=')
+            op = e_more;
+        else
+            op = more;
+        break;
+
+    case '!':
+        if (*(c + 1) == '=')
+            op = different;
+        else
+            op = invalid;
+        break;
+
     case'=':
-        return equal;
+        op= equal;
+        break;
     default:
-        return invalid;
+        op = invalid;
     }
+    return op;
 }
 
 int FirstNameFilter(Course_data model, Course_data data, operato op) {
-    return( !strcicmp(model.firstN, data.firstN ) );
+    //return( !strcicmp(model.firstN, data.firstN ) 
+    return calcString(data.firstN, op, model.firstN);
 }
 
 int LastNameFilter(Course_data model, Course_data data, operato op) {
-    return(!strcicmp(model.lastN, data.lastN));
+    //return(!strcicmp(model.lastN, data.lastN));
+    return calcString(data.lastN, op, model.lastN);
+
 }
 
 int gradeFilter(Course_data model, Course_data data, operato op) {
@@ -128,17 +171,6 @@ int averageFilter(Course_data model, Course_data data, operato op) {
     return calc(ave, op, model.average);
 }
 
-//call avaerage of degree aray. only valid listings consired.
-float calAverage(char* arr) {
-    int i, counter =0;
-    float sum = 0;   
-    for(i=0; i<NUM_OF_COURSES; i++)
-        if (arr[i] != -1) {
-            sum += arr[i];
-            counter++;
-       }
-    return (float)sum /counter;
-}
 
 int calc(float ave, operato op, float model) {
     switch (op)
@@ -149,6 +181,33 @@ int calc(float ave, operato op, float model) {
         return ave > model;
     case equal:
         return ave == model;
+    case e_less:
+        return ave <= model;
+    case e_more:
+        return ave >= model;
+    case different:
+        return ave != model;
+
+    default:                                      // not in use;
+        return 0;
+    }
+}
+
+int calcString(char *str, operato op, char* model) {
+    switch (op)
+    {
+    case less:
+        return strcicmp(str, model)<0;
+    case more:
+        return strcicmp(str, model) > 0;
+    case equal:
+        return strcicmp(str, model) == 0;
+    case e_less:
+        return strcicmp(str, model) <= 0;
+    case e_more:
+        return strcicmp(str, model) >= 0;
+    case different:
+        return strcicmp(str, model) != 0;
 
     default:                                      // not in use;
         return 0;

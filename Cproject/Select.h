@@ -4,7 +4,7 @@
 
 void do_select(Node** listHead, char* line);
 
-operato swichoperato(char c);
+operato swichoperato(char *c);
 
 int FirstNameFilter(Course_data model, Course_data data, operato op);
 
@@ -14,6 +14,7 @@ int gradeFilter(Course_data model, Course_data data, operato op);
 
 int averageFilter(Course_data model, Course_data data, operato op);
 
-float calAverage(char* arr);
 
 int calc(float ave, operato op, float model);
+
+int calcString(char* str, operato op, char* model);

@@ -2,6 +2,8 @@
 #include <math.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
+
 #include "main.h"
 #include "Select.h"
 #include "MargeSortList.h"
@@ -15,26 +17,27 @@
 
 int main() {
     Node *listHead=NULL;
-     //open file to read
+     //open file
     int valid_flag=1;
-    FILE* file = fopen(INPUT_FILE, "r+");
+    /*FILE* file = fopen(INPUT_FILE, "r+");
     if (!file){
         printf("error to open file");
         exit(1);
-    }
-    valid_flag = readData(file, &listHead);
+    }*/
+    valid_flag = readData(/*file,*/ &listHead);
         //error_exit("error at read file", listHead);
     print(listHead, reset_course_data(), UnFilter, equal);
     if(!valid_flag)
         printf("There was a mismatch or failure to receive the data. \n"\
             "If you make an update, the input file will be replaced with the recorded data only.\n");
-    listen(&listHead);
-    fclose(file);
+    listen(/*&file,*/ &listHead);
+    //updateData(&file, listHead);
+    //fclose(file);
     delete_data_linked_list(listHead);
 
 }
 
-void listen(Node** listHead) {
+void listen(/*FILE** file,*/ Node** listHead) {
    char line[MAX_ROW],*pcommand;
    char start_flag = 1;
 
@@ -60,7 +63,7 @@ void listen(Node** listHead) {
            continue;
        }
        if (strcmp(pcommand, "set")==0) {
-           do_set(listHead, line);
+           do_set(/*file,*/ listHead, line);
            MergeSort(listHead);
            continue;
        }

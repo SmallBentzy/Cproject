@@ -25,4 +25,6 @@ Courses validCourse(char* str);
 
 int space_counter(char* str);
 
-void insert_degree(Courses course, float degree, Course_data* data);
+void insert_degree(Courses course, char degree, Course_data* data);
+
+float calAverage(char* arr);

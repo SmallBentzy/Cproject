@@ -4,7 +4,7 @@
 //#include "Templates.h"
 #include "Utililities.h"
 
-void listen(Node** listHead);
+void listen(/*FILE**,*/ Node** listHead);
 
 
 void prompet(char* line);

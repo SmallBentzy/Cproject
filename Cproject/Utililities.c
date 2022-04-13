@@ -1,6 +1,10 @@
 
 #include <stdio.h>
 #include <ctype.h> 
+//#include<stralign.h>
+#include<string.h>
+#include <stdlib.h>
+
 #include "Utililities.h"
 
 void lowerCaseString(char* str) {
@@ -45,10 +49,6 @@ void eraseSpace(char* str) {
 }
 
 Course_data reset_course_data() {
-#ifdef DEBUG
-	printf(KNRM " line %d in func  %s file %s\n", __LINE__, __func__, __FILE__);
-#endif // DEBUG
-
 	Course_data new;
 	for (int i = 0; i < NUM_OF_COURSES; i++)
 		new.scores[i] = -1;
@@ -72,7 +72,7 @@ int validateScore(char* str) {
         printf("the degree '%s' is no valid. it have contain digits only.\n", str);
         return 0;
     }
-    float degree = atof(str);
+    float degree = (float)atof(str);
     if (degree< MIN_SCORE || degree >MAX_SCORE) {
         printf("the score '%s' is no valid. it have be between %d to %d.\n", str, MAX_SCORE, MIN_SCORE);
         return 0;
@@ -130,6 +130,18 @@ int space_counter(char* str) {
     return counter;
 }
 
-void insert_degree(Courses course, float degree, Course_data* data) {
+void insert_degree(Courses course, char degree, Course_data* data) {
     data->scores[course] = degree;
+}
+
+//call avaerage of degree aray. only valid listings consired.
+float calAverage(char* arr) {
+    int i, counter = 0;
+    float sum = 0;
+    for (i = 0; i < NUM_OF_COURSES; i++)
+        if (arr[i] != -1) {
+            sum += arr[i];
+            counter++;
+        }
+    return (float)sum / counter;
 }
