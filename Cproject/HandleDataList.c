@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "HandleDataList.h"
-#include "Utililities.h"
+#include "Utilities.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
@@ -28,12 +28,12 @@ int insert_data(Course_data data, Node** head) {
 
         for (Courses course = 0; course < NUM_OF_COURSES; course++)
             if (data.scores[course] >= 0)
-                if (node->course_data->scores[course] >= 0) {
+                /*if (node->course_data->scores[course] >= 0) {
                     COURSES_ARRAY
-                        printf("the score of course '%s' of %d ID is Redefined", courses[course], data.ID);
+                        printf("the score of course '%s' of %d ID is Redefined.", courses[course], data.ID);
                     return 0;
                 }
-                else
+                else*/
                     node->course_data->scores[course] = data.scores[course];
     }
     return 1;
@@ -45,6 +45,10 @@ Node* create_node() {
     if (newNode) {
         newNode->next = NULL;
         newNode->course_data = (Course_data*)malloc(sizeof(Course_data));
+        if (newNode->course_data)
+            *(newNode->course_data) = createCourseData();
+        else
+            free(newNode);
     }
     return newNode;
 }
@@ -62,12 +66,14 @@ void addNode(Node* newNode, Node** head) {
 
 void delete_data_linked_list(Node* head) {
     while (head) {
-
+        if (head->course_data->firstN)
+            free(head->course_data->firstN);
+        if (head->course_data->lastN)
+            free(head->course_data->lastN);
         free(head->course_data);
         Node* temp = head;
         head = head->next;
         free(temp);
-
     }
 }
 
@@ -78,6 +84,13 @@ Node* findByID(int ID, Node* head) {
 }
 
 void copyStudentData(Node* studentNode, Course_data data) {
+    char* first, * last;
+    studentNode->course_data->firstN = realloc(studentNode->course_data->firstN, strlen(data.firstN)+1);
+    studentNode->course_data->lastN = realloc(studentNode->course_data->lastN, strlen(data.lastN)+1);
+    if (!studentNode->course_data->firstN || !studentNode->course_data->lastN) {
+        printf("Failed to allocate memory");
+        return;
+    }
     strcpy(studentNode->course_data->firstN, data.firstN);
     strcpy(studentNode->course_data->lastN, data.lastN);
     for (Courses c = 0; c < NUM_OF_COURSES; c++)

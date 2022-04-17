@@ -9,7 +9,9 @@ int strcincmp(char const* a, char const* b, int n);
 
 void eraseSpace(char* str);
 
-Course_data reset_course_data();
+Course_data createCourseData();
+
+void eraseCourseData(Course_data* courseData);
 
 int validatename(char* str);
 

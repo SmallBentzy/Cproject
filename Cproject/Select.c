@@ -5,14 +5,14 @@
 #include <stdio.h>
 #include "Print.h"
 //#include<math.h>
-#include"Utililities.h"
+#include"Utilities.h"
 #include <stdlib.h>
 
 void do_select(Node** listHead, char* line) {
-    char* took;
+    char* tokP;
     char* ch=NULL;
-    char* copy = line + 7 + space_counter(line);//                                    the offset of 'select'
-    Course_data data = reset_course_data();
+    char* copy = line + 7 + space_counter(line);//   the offset of 'select'///macro
+    Course_data data = createCourseData();
     operato op =invalid;
     Courses course =no_valid;
     
@@ -22,92 +22,101 @@ void do_select(Node** listHead, char* line) {
     }
     else {
         printf("invalid command! operator missing\n");
-        return;
+         goto ret;
     }
-    took = strtok(NULL, "=<>!");
-    if (!took) {
+    tokP = strtok(NULL, "=<>!");
+    if (!tokP) {
         printf("invalid command! parmetrer missing\n");
-        return;
+         goto ret;
     }
-    eraseSpace(took);                                                                 //erase begining apace
-    took += space_counter(took);                                                      //erase ending space
+    eraseSpace(tokP);                                                                 //erase begining apace
+    tokP += space_counter(tokP);                                                      //erase ending space
     
     
-    if ( !strcicmp(took, "first name")) {
-        took = strtok(NULL, ",\n");
-        if (!took) {
+    if ( !strcicmp(tokP, "first name")) {
+        tokP = strtok(NULL, ",\n");
+        if (!tokP) {
             printf("invalid command! name mising\n");
-            return;
+             goto ret;
         }
         if ((op == e_less || op == e_more || op == different))                  //need to jamp over the double operator
-            took++;
-        took += space_counter(took);     
-        eraseSpace(took);
+            tokP++;
+        tokP += space_counter(tokP);     
+        eraseSpace(tokP);
 
-        if (!validatename(took)) {
+        if (!validatename(tokP)) {
             //printf("Invalid name '%s'\n", took);
+             goto ret;
+        }
+        if (!(data.firstN = (char*)malloc(strlen(tokP) + 1))) {
+            printf("Failed to allocate memory");
             return;
         }
-        strcpy(data.firstN, took);
-        if (took = strtok(NULL, ""))
-            printf("Unnecessary arguments in command line. '%s'\n", took);
+        strcpy(data.firstN, tokP);
+        if (tokP = strtok(NULL, ""))
+            printf("Unnecessary arguments in command line. '%s'\n", tokP);
         print(*listHead, data, FirstNameFilter, op);
 
-        return;
+         goto ret;
     }
 
-    if (!strcicmp(took , "second name")) {
-        took = strtok(NULL, ", \n");
-        if (!took) {
+    if (!strcicmp(tokP , "second name")) {
+        tokP = strtok(NULL, ", \n");
+        if (!tokP) {
             printf("invalid command! name mising\n");
-            return;
+             goto ret;
         }
         if ((op == e_less || op == e_more || op == different))                  //need to jamp over the double operator
-            took++;
-        took += space_counter(took);
-        eraseSpace(took);
+            tokP++;
+        tokP += space_counter(tokP);
+        eraseSpace(tokP);
         
-        if (!validatename(took)) {
-            printf("Invalid name '%s'\n", took);
-            return;
+        if (!validatename(tokP)) {
+            printf("Invalid name '%s'\n", tokP);
+             goto ret;
         }
-        strcpy(data.lastN, took);
-        if (took = strtok(NULL, ""))
-            printf("Unnecessary arguments in command line. '%s'\n", took);
+        data.firstN = (char*)malloc(strlen(tokP) + 1);
+        strcpy(data.lastN, tokP);
+        if (tokP = strtok(NULL, ""))
+            printf("Unnecessary arguments in command line. '%s'\n", tokP);
         print(*listHead, data, LastNameFilter, op);
-        return;
+         goto ret;
     }                                                                       //calc select by course score or average
    
     
-    if(!strcicmp(took, "Average") || (course = validCourse(took))!= no_valid) {
-        took = strtok(NULL, " ,\n");
-        if (!took) {
+    if(!strcicmp(tokP, "Average") || (course = validCourse(tokP))!= no_valid) {
+        tokP = strtok(NULL, " ,\n");
+        if (!tokP) {
             printf("invalid command! parameter mising\n");
-            return;
+             goto ret;
         }
         if ((op == e_less || op == e_more || op == different))                  //need to jamp over the double operator
-            took++;
-        took += space_counter(took);
-        eraseSpace(took);
+            tokP++;
+        tokP += space_counter(tokP);
+        eraseSpace(tokP);
 
-        if (!validateScore(took)) {
-            return;
+        if (!validateScore(tokP)) {
+             goto ret;
         }
         if(course ==no_valid)
-            data.average = (float)atof(took);
+            data.average = (float)atof(tokP);
         else
-            data.scores[course] = atoi(took);
-        if(took = strtok(NULL, " "))
-            printf("Unnecessary arguments in command line. '%s'\n", took);
+            data.scores[course] = atoi(tokP);
+        if(tokP = strtok(NULL, " "))
+            printf("Unnecessary arguments in command line. '%s'\n", tokP);
         if(course==no_valid)
             print(*listHead, data, averageFilter, op);
         else
             print(*listHead, data, gradeFilter, op);
 
-        return;
+        goto ret;
     }
     //else
-    printf("'%s' is not a parameter.\n", took);
+    printf("'%s' is not a parameter.\n", tokP);
+
+ret: 
+    eraseCourseData(&data);
+
 
 }
 
@@ -141,6 +150,7 @@ operato swichoperato(char *c) {
     case'=':
         op= equal;
         break;
+
     default:
         op = invalid;
     }

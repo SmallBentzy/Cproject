@@ -1,4 +1,4 @@
-#include "Utililities.h"
+#include "Utilities.h"
 #include <stdio.h>
 
 int getData(char* one, Course_data* data);

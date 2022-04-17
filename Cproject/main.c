@@ -17,28 +17,21 @@
 
 int main() {
     Node *listHead=NULL;
-     //open file
     int valid_flag=1;
-    /*FILE* file = fopen(INPUT_FILE, "r+");
-    if (!file){
-        printf("error to open file");
-        exit(1);
-    }*/
-    valid_flag = readData(/*file,*/ &listHead);
-        //error_exit("error at read file", listHead);
-    print(listHead, reset_course_data(), UnFilter, equal);
+    
+    valid_flag = readData( &listHead);
+    print(listHead, createCourseData(), UnFilter, equal);
     if(!valid_flag)
         printf("There was a mismatch or failure to receive the data. \n"\
             "If you make an update, the input file will be replaced with the recorded data only.\n");
-    listen(/*&file,*/ &listHead);
-    //updateData(&file, listHead);
-    //fclose(file);
+    listen( &listHead);
+    
     delete_data_linked_list(listHead);
 
 }
 
 void listen(/*FILE** file,*/ Node** listHead) {
-   char line[MAX_ROW],*pcommand;
+   char line[MAX_ROW+2],*pcommand;
    char start_flag = 1;
 
    while(start_flag) {
@@ -49,7 +42,7 @@ void listen(/*FILE** file,*/ Node** listHead) {
        if (strlen(line) == 0)
            continue;
        pcommand = strtok(line, " ");
-       //strcpy(command, strtok(line, " "));
+       
        if (!pcommand)
            continue;
        
@@ -58,7 +51,7 @@ void listen(/*FILE** file,*/ Node** listHead) {
            continue;
        }
        if (len == MAX_ROW-1) {
-           printf("You enterd to long command. please enter a valid command, acording to rools\n");
+           printf("You enterd to long command. please enter a valid command, acording to rools.\n");
            while (getchar()!='\n');
            continue;
        }
@@ -68,7 +61,7 @@ void listen(/*FILE** file,*/ Node** listHead) {
            continue;
        }
        if (strcmp(pcommand, "print") == 0) {
-           print(*listHead, reset_course_data(), UnFilter, equal);
+           print(*listHead, createCourseData(), UnFilter, equal);
            continue;
        }
        if (strcicmp(pcommand, "select") == 0) {
@@ -81,18 +74,10 @@ void listen(/*FILE** file,*/ Node** listHead) {
 
 
 
-
 void prompet(char* line) {
     printf("->");
     fgets(line, MAX_ROW, stdin);
 }
 
 
-//void error_exit(char* msg, Node* list)
-//{
-//    if (list) {
-//        delete_data_linked_list(list);
-//    }
-//    printf("%s\n", msg);
-//}
 

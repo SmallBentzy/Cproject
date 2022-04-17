@@ -5,7 +5,7 @@
 #include<string.h>
 #include <stdlib.h>
 
-#include "Utililities.h"
+#include "Utilities.h"
 
 void lowerCaseString(char* str) {
 	while (*str)
@@ -48,11 +48,23 @@ void eraseSpace(char* str) {
 		str[index] = '\0';
 }
 
-Course_data reset_course_data() {
+Course_data createCourseData() {
 	Course_data new;
+    new.firstN = NULL;
+    new.lastN = NULL;
+    new.ID = 0;
 	for (int i = 0; i < NUM_OF_COURSES; i++)
 		new.scores[i] = -1;
 	return new;
+}
+
+void eraseCourseData(Course_data *courseData) {
+    if (courseData->firstN)
+        free(courseData->firstN);
+    if (courseData->lastN)
+        free(courseData->lastN);
+    for (Courses i = 0; i < NUM_OF_COURSES; i++)
+        courseData->scores[i] = -1;
 }
 
 int validatename(char* str) {

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "main.h"
 #include "MargeSortList.h"
-#include"Utililities.h"
+#include"Utilities.h"
 //#define DEBUG 0
 
 // Sorts the linked list by changing
@@ -42,13 +42,7 @@ void MergeSort( Node** headRef)
     else if (b == NULL)
         return (a);
 
-    // Pick either a or b, and recur
-    /*strcpy(aName, a->course_data->lastN);
-    strcpy(bName, b->course_data->lastN);
-    lowerCaseString(aName);
-    lowerCaseString(bName);*/
 
-    //if ( strcmp(aName, bName)<=0)
     if (strcicmp(a->course_data->lastN, b->course_data->lastN) <= 0)
     {
         //printf(" %s  is before %s \n", a->course_data->lastN, b->course_data->lastN);

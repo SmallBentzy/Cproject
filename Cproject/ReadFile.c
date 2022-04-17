@@ -10,33 +10,35 @@
 
 //data in string format is to be supplied to Cource data and it will store that in structure, after string parsing, strtok will tokenize string from each “,”
 int getData(char* one, Course_data* data) {
-    char* ptook = NULL;
-    ptook = strtok(one, ",");
-    if (!validatename(ptook))
+    char* tokP = NULL;
+    tokP = strtok(one, ",");
+    if (!validatename(tokP))
         return 0;
-    strcpy(data->firstN, ptook);
+    data->firstN =(char*)malloc(strlen(tokP) + 1);
+    strcpy(data->firstN, tokP);
 
-    ptook = strtok(NULL, ",");
-    if (!validatename(ptook))
+    tokP = strtok(NULL, ",");
+    if (!validatename(tokP))
         return 0;
-    strcpy(data->lastN, ptook);
+    data->lastN = (char*)malloc(strlen(tokP) + 1);
+    strcpy(data->lastN, tokP);
 
-    ptook = strtok(NULL, ",");
-    if (!validateID(ptook))
+    tokP = strtok(NULL, ",");
+    if (!validateID(tokP))
         return 0;
-    data->ID = atoi(ptook);
+    data->ID = atoi(tokP);
 
-    ptook = strtok(NULL, ",");
+    tokP = strtok(NULL, ",");
     Courses course;
-    if ((course = validCourse(ptook)) == NUM_OF_COURSES) {
-        printf("the course '%s' is no valid.\n", ptook);
+    if ((course = validCourse(tokP)) == NUM_OF_COURSES) {
+        printf("the course '%s' is no valid.\n", tokP);
         return 0;
     }
 
-    ptook = strtok(NULL, ", \n");
-    if (!validateScore(ptook))
+    tokP = strtok(NULL, ", \n");
+    if (!validateScore(tokP))
         return 0;
-    char degree = (char)atoi(ptook);
+    char degree = (char)atoi(tokP);
     insert_degree(course, degree, data);
 
     return 1;
@@ -44,9 +46,9 @@ int getData(char* one, Course_data* data) {
 
 int readData(/*FILE* file,*/ Node** head) {
     char line[MAX_ROW + 2];
-    char valid_flag = 1, to_longFlag=0;
+    char validFlag = 1, tooLongFlag=0;
     int index = 0;
-    Course_data data;
+    Course_data data ;
     FILE* file = fopen(INPUT_FILE, "r");
     if (!file) {
         printf("error to open read file");
@@ -54,38 +56,38 @@ int readData(/*FILE* file,*/ Node** head) {
     }
     while (fgets(line, MAX_ROW + 2, file)) {
         index++;
+        //printf("line %d \n", index);
+        tooLongFlag = 0;
+        data = createCourseData();
         int len = (int)strlen(line);
         if (line[len - 1] == '\n')
             line[len - 1] = '\0';
         else {
-            while (getchar() != '\n');
-            to_longFlag = 1;
+            while (fgetc(file) != '\n');
+            tooLongFlag = 1;
         }
 
-        data = reset_course_data();
         if (!getData(line, &data)) {
+            eraseCourseData(&data);
             printf("line %d no entered\n", index);
-            valid_flag = 0;
-            // goto next;0
+            validFlag = 0;
         }
         else {
             if (!insert_data(data, head)) {
-                valid_flag = 0;
+                validFlag = 0;
+                eraseCourseData(&data);
                 printf("line %d is no valid\n", index);
             }
-            else {                                      
+            else {                                                      //a valid data added
                 char* trash = strtok(NULL, " ");
-                if (trash || to_longFlag)
+                if (trash || tooLongFlag)
                     printf("Unnecessary arguments in line %d\n", index);
             }
         }
-        //next:   //fgets(line, MAX_ROW + 1, file);
-               //printf("\n%s\n", line);
-        
     }
     fclose(file);
     MergeSort(head);
-    return valid_flag;
+    return validFlag;
 }
 
 

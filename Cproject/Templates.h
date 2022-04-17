@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 
-#define INPUT_FILE "D:new 2.txt"
+#define INPUT_FILE "D:input2.txt"//"D:new 2.txt"
 #define MAX_NAME 25
 #define MAX_COURSE_NAME 25
 #define MAX_ROW 95
@@ -16,8 +16,8 @@
 
 
 typedef struct Course_data {
-    char firstN[MAX_NAME];
-    char lastN[MAX_NAME];
+    char* firstN;//[MAX_NAME];              //malloc
+    char* lastN;// [MAX_NAME] ;
     int ID;
     union score
     {
