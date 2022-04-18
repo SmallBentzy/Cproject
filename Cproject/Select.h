@@ -2,17 +2,17 @@
 #include "Templates.h"
 
 
-void do_select(Node** listHead, char* line);
+void doSelect(Node** listHead, char* line);
 
 operato swichoperato(char *c);
 
-int FirstNameFilter(Course_data model, Course_data data, operato op);
+int FirstNameFilter(CourseData model, CourseData data, operato op);
 
-int LastNameFilter(Course_data model, Course_data data, operato op);
+int LastNameFilter(CourseData model, CourseData data, operato op);
 
-int gradeFilter(Course_data model, Course_data data, operato op);
+int gradeFilter(CourseData model, CourseData data, operato op);
 
-int averageFilter(Course_data model, Course_data data, operato op);
+int averageFilter(CourseData model, CourseData data, operato op);
 
 
 int calc(float ave, operato op, float model);

@@ -4,6 +4,6 @@
 
 void updateData(/*FILE** ,*/ Node* listHead);
 
-void writeCourseData(FILE* , Course_data data);
+void writeCourseData(FILE* , CourseData data);
 
 //void eraseFileTail(FILE* );

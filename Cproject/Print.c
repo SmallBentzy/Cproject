@@ -1,7 +1,7 @@
 #include "Print.h"
 
 
-void print(Node* head, Course_data model, filter fil, operato op) {
+void print(Node* head, CourseData model, filter fil, operato op) {
     COURSES_ARRAY
         if (head) {
             printf("\n");
@@ -37,6 +37,6 @@ void print(Node* head, Course_data model, filter fil, operato op) {
 }
 
 
-int UnFilter(Course_data model, Course_data data, operato op) {
+int UnFilter(CourseData model, CourseData data, operato op) {
     return(1);
 }

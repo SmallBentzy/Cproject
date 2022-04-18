@@ -26,7 +26,7 @@ int main() {
             "If you make an update, the input file will be replaced with the recorded data only.\n");
     listen( &listHead);
     
-    delete_data_linked_list(listHead);
+    deleteDataLinkedList(listHead);
 
 }
 
@@ -39,6 +39,8 @@ void listen(/*FILE** file,*/ Node** listHead) {
        int len = (int)strlen(line);
        if (line[len - 1] == '\n')
            line[len - 1] = '\0';
+       else
+           while (getchar() != '\n');
        if (strlen(line) == 0)
            continue;
        pcommand = strtok(line, " ");
@@ -52,11 +54,11 @@ void listen(/*FILE** file,*/ Node** listHead) {
        }
        if (len == MAX_ROW-1) {
            printf("You enterd to long command. please enter a valid command, acording to rools.\n");
-           while (getchar()!='\n');
+           
            continue;
        }
        if (strcmp(pcommand, "set")==0) {
-           do_set(/*file,*/ listHead, line);
+           doSet(/*file,*/ listHead, line);
            MergeSort(listHead);
            continue;
        }
@@ -65,7 +67,7 @@ void listen(/*FILE** file,*/ Node** listHead) {
            continue;
        }
        if (strcicmp(pcommand, "select") == 0) {
-           do_select(listHead, line);
+           doSelect(listHead, line);
            continue;
        }
        printf("Invalid command!\n");                            //if it no mach any command.

@@ -3,4 +3,4 @@
 //#include <stdio.h>
 //#include <stdlib.h>
 
-void do_set(/*FILE** ,*/ Node** listHead, char* line);
+void doSet(/*FILE** ,*/ Node** listHead, char* line);

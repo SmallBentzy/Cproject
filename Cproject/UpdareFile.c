@@ -10,13 +10,16 @@ void updateData(/*FILE** file,*/ Node* listHead){
 	}
 	
 	fclose(outTemp);
-	if (remove(INPUT_FILE) || rename("D:temp", INPUT_FILE)) {
+	if (remove(INPUT_FILE) ) {
+		printf("an Error occure by update sorce file\n");
+	}
+	if (rename("D:temp", INPUT_FILE)) {
 		printf("an Error occure by update sorce file\n");
 	}
 
 }
 
-void writeCourseData(FILE* file, Course_data data) {
+void writeCourseData(FILE* file, CourseData data) {
 	Courses course;
 	COURSES_ARRAY
 		for (course = 0; course < NUM_OF_COURSES; course++)

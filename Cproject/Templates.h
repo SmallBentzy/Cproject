@@ -15,20 +15,20 @@
 #define MIN_SCORE 0
 
 
-typedef struct Course_data {
+typedef struct CourseData {
     char* firstN;//[MAX_NAME];              //malloc
     char* lastN;// [MAX_NAME] ;
     int ID;
     union score
     {
         char scores[NUM_OF_COURSES];
-        float average;
+        float average;                     //average used only by specific function
     };
     
-}Course_data;
+}CourseData;
 
 typedef struct Node {
-    Course_data* course_data;
+    CourseData* course_data;
     struct Node* next;
 }Node;
 
@@ -38,4 +38,4 @@ typedef enum operato{
 
 typedef enum Courses { C_language, Computer_Networks, CS_Fundamentals, no_valid }Courses;
 
-typedef int (*filter)(Course_data, Course_data, operato);
+typedef int (*filter)(CourseData, CourseData, operato);

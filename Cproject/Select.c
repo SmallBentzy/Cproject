@@ -4,15 +4,14 @@
 #include <string.h>
 #include <stdio.h>
 #include "Print.h"
-//#include<math.h>
 #include"Utilities.h"
 #include <stdlib.h>
 
-void do_select(Node** listHead, char* line) {
+void doSelect(Node** listHead, char* line) {
     char* tokP;
     char* ch=NULL;
-    char* copy = line + 7 + space_counter(line);//   the offset of 'select'///macro
-    Course_data data = createCourseData();
+    char* copy = line + 7 + spaceCounter(line);//   the offset of 'select'/   //macro
+    CourseData data = createCourseData();
     operato op =invalid;
     Courses course =no_valid;
     
@@ -29,9 +28,8 @@ void do_select(Node** listHead, char* line) {
         printf("invalid command! parmetrer missing\n");
          goto ret;
     }
-    eraseSpace(tokP);                                                                 //erase begining apace
-    tokP += space_counter(tokP);                                                      //erase ending space
-    
+    tokP = eraseSpace(tokP);
+
     
     if ( !strcicmp(tokP, "first name")) {
         tokP = strtok(NULL, ",\n");
@@ -41,9 +39,7 @@ void do_select(Node** listHead, char* line) {
         }
         if ((op == e_less || op == e_more || op == different))                  //need to jamp over the double operator
             tokP++;
-        tokP += space_counter(tokP);     
-        eraseSpace(tokP);
-
+        tokP = eraseSpace(tokP);
         if (!validatename(tokP)) {
             //printf("Invalid name '%s'\n", took);
              goto ret;
@@ -61,21 +57,19 @@ void do_select(Node** listHead, char* line) {
     }
 
     if (!strcicmp(tokP , "second name")) {
-        tokP = strtok(NULL, ", \n");
+        tokP = strtok(NULL, ",\n");
         if (!tokP) {
             printf("invalid command! name mising\n");
              goto ret;
         }
         if ((op == e_less || op == e_more || op == different))                  //need to jamp over the double operator
             tokP++;
-        tokP += space_counter(tokP);
-        eraseSpace(tokP);
-        
+        tokP = eraseSpace(tokP);
         if (!validatename(tokP)) {
             printf("Invalid name '%s'\n", tokP);
              goto ret;
         }
-        data.firstN = (char*)malloc(strlen(tokP) + 1);
+        data.lastN = (char*)malloc(strlen(tokP) + 1);
         strcpy(data.lastN, tokP);
         if (tokP = strtok(NULL, ""))
             printf("Unnecessary arguments in command line. '%s'\n", tokP);
@@ -92,8 +86,7 @@ void do_select(Node** listHead, char* line) {
         }
         if ((op == e_less || op == e_more || op == different))                  //need to jamp over the double operator
             tokP++;
-        tokP += space_counter(tokP);
-        eraseSpace(tokP);
+        tokP = eraseSpace(tokP);
 
         if (!validateScore(tokP)) {
              goto ret;
@@ -116,8 +109,6 @@ void do_select(Node** listHead, char* line) {
 
 ret: 
     eraseCourseData(&data);
-
-
 }
 
 
@@ -157,18 +148,18 @@ operato swichoperato(char *c) {
     return op;
 }
 
-int FirstNameFilter(Course_data model, Course_data data, operato op) {
+int FirstNameFilter(CourseData model, CourseData data, operato op) {
     //return( !strcicmp(model.firstN, data.firstN ) 
     return calcString(data.firstN, op, model.firstN);
 }
 
-int LastNameFilter(Course_data model, Course_data data, operato op) {
+int LastNameFilter(CourseData model, CourseData data, operato op) {
     //return(!strcicmp(model.lastN, data.lastN));
     return calcString(data.lastN, op, model.lastN);
 
 }
 
-int gradeFilter(Course_data model, Course_data data, operato op) {
+int gradeFilter(CourseData model, CourseData data, operato op) {
     Courses i = 0;
     for (; i < NUM_OF_COURSES; i++)
         if (model.scores[i] != -1)
@@ -176,7 +167,7 @@ int gradeFilter(Course_data model, Course_data data, operato op) {
     return calc(data.scores[i], op, model.scores[i]);
 }
 
-int averageFilter(Course_data model, Course_data data, operato op) {
+int averageFilter(CourseData model, CourseData data, operato op) {
     float ave = calAverage(data.scores);
     return calc(ave, op, model.average);
 }

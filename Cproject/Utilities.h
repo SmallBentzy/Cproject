@@ -7,11 +7,13 @@ int strcicmp(char const* a, char const* b);
 
 int strcincmp(char const* a, char const* b, int n);
 
-void eraseSpace(char* str);
+void eraseEndSpace(char* str);
 
-Course_data createCourseData();
+char* eraseSpace(char* str);
 
-void eraseCourseData(Course_data* courseData);
+CourseData createCourseData();
+
+void eraseCourseData(CourseData* courseData);
 
 int validatename(char* str);
 
@@ -25,8 +27,8 @@ int isNumericOnlyString(char* str);
 
 Courses validCourse(char* str);
 
-int space_counter(char* str);
+int spaceCounter(char* str);
 
-void insert_degree(Courses course, char degree, Course_data* data);
+void insertDegree(Courses course, char degree, CourseData* data);
 
 float calAverage(char* arr);

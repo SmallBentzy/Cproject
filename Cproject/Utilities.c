@@ -36,7 +36,7 @@ int strcincmp(char const* a, char const* b, int n)
 	}
 	return 0;
 }
-void eraseSpace(char* str) {
+void eraseEndSpace(char* str) {
 	int i, index = -1;
 	for (i = 0; str[i]; i++) {
 		if (str[i] != ' ')
@@ -48,8 +48,13 @@ void eraseSpace(char* str) {
 		str[index] = '\0';
 }
 
-Course_data createCourseData() {
-	Course_data new;
+char* eraseSpace(char* str) {
+    eraseEndSpace(str);
+    return str + spaceCounter(str);
+}
+
+CourseData createCourseData() {
+	CourseData new;
     new.firstN = NULL;
     new.lastN = NULL;
     new.ID = 0;
@@ -58,7 +63,7 @@ Course_data createCourseData() {
 	return new;
 }
 
-void eraseCourseData(Course_data *courseData) {
+void eraseCourseData(CourseData *courseData) {
     if (courseData->firstN)
         free(courseData->firstN);
     if (courseData->lastN)
@@ -106,8 +111,9 @@ int validateID(char* str) {
 
 int isAlphaOnlyString(char* str) {
     while (*str != 0) {
-        if (!isalpha(*str++))
+        if (!isalpha(*str) && !isspace(*str) )
             return 0;
+        str++;
     }
     return 1;
 }
@@ -133,7 +139,7 @@ Courses validCourse(char* str) {
 
 /*counts and returns the apaces begin the given str
 */
-int space_counter(char* str) {
+int spaceCounter(char* str) {
     int counter = 0;
     while (str && *str == ' ') {
         counter++;
@@ -142,7 +148,7 @@ int space_counter(char* str) {
     return counter;
 }
 
-void insert_degree(Courses course, char degree, Course_data* data) {
+void insertDegree(Courses course, char degree, CourseData* data) {
     data->scores[course] = degree;
 }
 
