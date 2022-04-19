@@ -66,7 +66,7 @@ int readData(/*FILE* file,*/ Node** head) {
     }
     while (fgets(line, MAX_ROW + 2, file) ) {
         index++;
-        printf("line %d \n", index);
+        //printf("line %d \n", index);
         tooLongFlag = 0;
         data = createCourseData();
         len = (int)strlen(line);
