@@ -1,7 +1,7 @@
 #include "Print.h"
 
 
-void print(Node* head, CourseData model, filter fil, operato op) {
+void print(Node* head, CourseData model, filter fil, operato op) {   
     COURSES_ARRAY
         if (head) {
             printf("\n");
@@ -34,6 +34,9 @@ void print(Node* head, CourseData model, filter fil, operato op) {
                 printf("=========================");
             printf("\n");
         }
+        else
+            printf("\nno data to print.\n");
+
 }
 
 

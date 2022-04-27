@@ -25,7 +25,7 @@ int main() {
         printf("There was a mismatch or failure to receive the data. \n"\
             "If you make an update, the input file will be replaced with the recorded data only.\n");
     listen( &listHead);
-    
+ 
     deleteDataLinkedList(listHead);
 
 }
@@ -59,7 +59,7 @@ void listen(/*FILE** file,*/ Node** listHead) {
        }
        if (strcmp(pcommand, "set")==0) {
            doSet(/*file,*/ listHead, line);
-           MergeSort(listHead);
+           
            continue;
        }
        if (strcmp(pcommand, "print") == 0) {

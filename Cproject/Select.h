@@ -14,6 +14,8 @@ int gradeFilter(CourseData model, CourseData data, operato op);
 
 int averageFilter(CourseData model, CourseData data, operato op);
 
+int IDFilter(CourseData model, CourseData data, operato op);
+
 
 int calc(float ave, operato op, float model);
 

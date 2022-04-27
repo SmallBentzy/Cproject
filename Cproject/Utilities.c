@@ -1,22 +1,22 @@
 
 #include <stdio.h>
 #include <ctype.h> 
-//#include<stralign.h>
 #include<string.h>
 #include <stdlib.h>
-
 #include "Utilities.h"
+//#define VALIDBIT 
 
-void lowerCaseString(char* str) {
-	while (*str)
-	{
-		//printf("%c", *str);
-		if (isupper(*(str)))
-			*str= tolower(*str);
-		str++;
-	}
-	
-}
+
+//void lowerCaseString(char* str) {
+//	while (*str)
+//	{
+//		//printf("%c", *str);
+//		if (isupper(*(str)))
+//			*str= tolower(*str);
+//		str++;
+//	}
+//	
+//}
 
 //insensitive compares insensitive strings a b
 int strcicmp(char const* a, char const* b)
@@ -27,15 +27,16 @@ int strcicmp(char const* a, char const* b)
 			return d;
 	}
 }
-int strcincmp(char const* a, char const* b, int n)
-{
-	for ( ;n>=0; n--, a++, b++) {
-		int d = tolower((unsigned char)*a) - tolower((unsigned char)*b);
-		if (d != 0 || !*a)
-			return d;
-	}
-	return 0;
-}
+//int strcincmp(char const* a, char const* b, int n)
+//{
+//	for ( ;n>=0; n--, a++, b++) {
+//		int d = tolower((unsigned char)*a) - tolower((unsigned char)*b);
+//		if (d != 0 || !*a)
+//			return d;
+//	}
+//	return 0;
+//}
+
 void eraseEndSpace(char* str) {
 	int i, index = -1;
 	for (i = 0; str[i]; i++) {
@@ -106,8 +107,26 @@ int validateID(char* str) {
         printf("the ID '%s' is no valid. it have be 9 digits.\n", str);
         return 0;
     }
+#ifdef VALIDBIT
+    if (!validateIsraelID(str)) {
+        printf("the ID '%s' is no valid.\n", str);
+        return 0;
+    }
+#endif // VALIDBIT 
+
     return 1;
 }
+
+#ifdef VALIDBIT
+int validateIsraelID(char* str) {
+    int i, sum=0, temp;
+    for (i = 0; i < 8; i++) {
+        temp = (str[i]-'0') * ((i % 2) + 1);
+        sum += (temp < 10) ? temp : temp % 10 + temp / 10;
+    }
+    return (str[8]-'0' + sum) % 10 == 0;
+}
+#endif // VALIDBIT 
 
 int isAlphaOnlyString(char* str) {
     while (*str != 0) {
@@ -126,11 +145,9 @@ int isNumericOnlyString(char* str) {
     return 1;
 }
 
+//COURSES_ARRAY
 Courses validCourse(char* str) {
     COURSES_ARRAY
-#ifdef DEBUG
-        printf("%s\n ", str);
-#endif // DEBUG
     for (Courses i = 0; i < NUM_OF_COURSES; i++)
         if (!strcmp(courses[i], str))
             return i;

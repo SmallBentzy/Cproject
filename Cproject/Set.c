@@ -4,6 +4,7 @@
 #include "UpdareFile.h"
 #include "HandleDataList.h"
 #include"Utilities.h"
+#include "MargeSortList.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
@@ -111,7 +112,7 @@ void doSet(/*FILE** file,*/ Node** listHead, char* line) {
     }
     else
         insertNewData(data, listHead);
-
+    MergeSort(listHead);
     updateData(/*file,*/ *listHead);
 
 

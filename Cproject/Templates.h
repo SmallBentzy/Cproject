@@ -10,13 +10,15 @@
 #define MAX_ROW 95
 #define COURSES_ARRAY char* courses[] = {[no_valid]="no_valid", [C_language] = "C language",\
 [Computer_Networks] = "Computer Networks",[CS_Fundamentals] = "CS Fundamentals" };
+
 #define NUM_OF_COURSES 3
 #define MAX_SCORE 100
 #define MIN_SCORE 0
 
 
+
 typedef struct CourseData {
-    char* firstN;//[MAX_NAME];              //malloc
+    char* firstN;//[MAX_NAME];             
     char* lastN;// [MAX_NAME] ;
     int ID;
     union score

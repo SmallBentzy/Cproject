@@ -1,11 +1,12 @@
 #pragma once
 #include "Templates.h"
 
-void lowerCaseString(char* str);
+
+//void lowerCaseString(char* str);					//not in use
 
 int strcicmp(char const* a, char const* b);
 
-int strcincmp(char const* a, char const* b, int n);
+//int strcincmp(char const* a, char const* b, int n);//not in use
 
 void eraseEndSpace(char* str);
 
@@ -20,6 +21,8 @@ int validatename(char* str);
 int validateScore(char* str);
 
 int validateID(char* str);
+
+int validateIsraelID(char* str);
 
 int isAlphaOnlyString(char* str);
 

@@ -79,7 +79,7 @@ void doSelect(Node** listHead, char* line) {
    
     
     if(!strcicmp(tokP, "Average") || (course = validCourse(tokP))!= no_valid) {
-        tokP = strtok(NULL, " ,\n");
+        tokP = strtok(NULL, ",\n");
         if (!tokP) {
             printf("invalid command! parameter mising\n");
              goto ret;
@@ -101,6 +101,26 @@ void doSelect(Node** listHead, char* line) {
             print(*listHead, data, averageFilter, op);
         else
             print(*listHead, data, gradeFilter, op);
+
+        goto ret;
+    }
+
+    if (!strcicmp(tokP, "ID")) {
+        tokP = strtok(NULL, ",\n");
+        if (!tokP) {
+            printf("invalid command! parameter mising\n");
+            goto ret;
+        }
+        if ((op == e_less || op == e_more || op == different))                  //need to jamp over the double operator
+            tokP++;
+        tokP = eraseSpace(tokP);
+        if (!validateID(tokP)) {
+            goto ret;
+        }
+        data.ID = atoi(tokP);
+        if (tokP = strtok(NULL, " "))
+            printf("Unnecessary arguments in command line. '%s'\n", tokP);
+        print(*listHead, data, IDFilter, op);
 
         goto ret;
     }
@@ -172,6 +192,9 @@ int averageFilter(CourseData model, CourseData data, operato op) {
     return calc(ave, op, model.average);
 }
 
+int IDFilter(CourseData model, CourseData data, operato op) {
+    return calc(data.ID, op, model.ID);
+}
 
 int calc(float ave, operato op, float model) {
     switch (op)
